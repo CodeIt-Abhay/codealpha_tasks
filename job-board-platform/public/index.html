@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentWave | Premium Job Board Platform</title>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/index.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar glass">
+    <div class="brand" id="nav-logo">
+      <i data-lucide="activity"></i> TalentWave
+    </div>
+    
+    <ul class="nav-links">
+      <li class="nav-item active" id="nav-home">Find Jobs</li>
+      <li class="nav-item" id="nav-dashboard" style="display: none;">Dashboard</li>
+    </ul>
+
+    <div class="nav-actions">
+      <!-- Dark/Light Mode Toggle -->
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i data-lucide="sun" id="theme-icon-light" style="display: none;"></i>
+        <i data-lucide="moon" id="theme-icon-dark"></i>
+      </button>
+
+      <!-- Notifications Icon -->
+      <button class="notification-trigger" id="notif-trigger" title="Notifications" style="display: none;">
+        <i data-lucide="bell"></i>
+        <span class="notification-badge" id="notif-badge"></span>
+      </button>
+
+      <!-- User Avatar / Auth Button -->
+      <div id="auth-nav-container">
+        <button class="btn btn-primary" id="btn-login-trigger">Sign In</button>
+      </div>
+
+      <!-- User Dropdown (Hidden by default) -->
+      <div class="user-dropdown" id="user-dropdown-container" style="display: none;">
+        <div class="user-profile-trigger" id="user-profile-trigger">
+          <div class="user-avatar" id="user-avatar-initials">TW</div>
+          <span id="user-display-name" style="font-weight: 500;">User Name</span>
+          <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
+        </div>
+        <div class="user-dropdown-menu" id="user-dropdown-menu">
+          <div class="dropdown-item" id="dropdown-dashboard-btn">
+            <i data-lucide="layout-dashboard" style="width: 16px;"></i> Dashboard
+          </div>
+          <div class="dropdown-item" id="dropdown-profile-btn">
+            <i data-lucide="user" style="width: 16px;"></i> Profile Settings
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="dropdown-logout-btn" style="color: var(--danger);">
+            <i data-lucide="log-out" style="width: 16px;"></i> Log Out
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notifications Drawer -->
+  <div class="notifications-drawer glass" id="notifications-drawer">
+    <div class="notifications-header">
+      <h3>Notifications</h3>
+      <button class="btn btn-secondary btn-sm" id="btn-read-all-notifs">Mark all read</button>
+    </div>
+    <div id="notifications-list" style="display: flex; flex-direction: column; gap: 8px;">
+      <!-- Dynamic notifications inserted here -->
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px;">No notifications</p>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- VIEW: LANDING / JOB SEARCH -->
+    <section class="view-section active" id="view-landing">
+      <div class="hero">
+        <h1>Discover Your Wave of Opportunities</h1>
+        <p>Connect with leading global companies or find the industry's finest talent. Your career journey starts here.</p>
+        
+        <!-- Search and Filter Container -->
+        <div class="search-container glass">
+          <div class="form-group" style="margin-bottom: 0;">
+            <input type="text" class="form-control" id="search-q" placeholder="Job title, keywords, or company...">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <select class="form-control" id="search-location">
+              <option value="All">All Locations</option>
+              <option value="Remote">Remote</option>
+              <option value="New York">New York</option>
+              <option value="San Francisco">San Francisco</option>
+              <option value="London">London</option>
+              <option value="Bengaluru">Bengaluru</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <select class="form-control" id="search-type">
+              <option value="All">All Types</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
+              <option value="Remote">Remote Only</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="btn-search">
+            <i data-lucide="search"></i> Find Jobs
+          </button>
+        </div>
+
+        <!-- Category Badges -->
+        <div class="category-badges">
+          <div class="badge active" data-category="All">All Roles</div>
+          <div class="badge" data-category="Developer">Development</div>
+          <div class="badge" data-category="Designer">Design</div>
+          <div class="badge" data-category="Marketing">Marketing</div>
+          <div class="badge" data-category="Manager">Product Management</div>
+          <div class="badge" data-category="Finance">Finance</div>
+        </div>
+      </div>
+
+      <!-- Job Listing Section -->
+      <h2 class="job-section-title">Latest Open Roles</h2>
+      <div class="jobs-grid" id="jobs-list-container">
+        <!-- Job card placeholders or dynamic listings -->
+        <div style="text-align: center; padding: 40px;" class="glass">
+          <i data-lucide="loader-2" style="width: 48px; height: 48px; animation: spin 1.5s linear infinite; margin-bottom: 12px; color: var(--primary);"></i>
+          <p>Loading jobs...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: JOB DETAILS -->
+    <section class="view-section" id="view-job-detail">
+      <button class="btn btn-secondary btn-sm" id="btn-back-to-jobs" style="margin-bottom: 20px;">
+        <i data-lucide="arrow-left"></i> Back to listings
+      </button>
+      
+      <div id="job-detail-content">
+        <!-- Dynamic job detail goes here -->
+      </div>
+    </section>
+
+    <!-- VIEW: CANDIDATE DASHBOARD -->
+    <section class="view-section" id="view-candidate-dashboard">
+      <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar glass">
+          <ul class="sidebar-menu">
+            <li class="sidebar-link active" id="c-menu-profile">
+              <i data-lucide="user"></i> My Profile
+            </li>
+            <li class="sidebar-link" id="c-menu-apps">
+              <i data-lucide="briefcase"></i> Track Applications
+            </li>
+          </ul>
+        </aside>
+
+        <!-- Main Panel -->
+        <div class="dashboard-main">
+          <!-- Profile View -->
+          <div class="dashboard-tab-content" id="c-tab-profile">
+            <div class="profile-hero glass" style="margin-bottom: 24px;">
+              <div class="profile-avatar-large" id="c-profile-avatar-initials">TW</div>
+              <div class="profile-info">
+                <h2 class="profile-name" id="c-profile-name">Candidate Name</h2>
+                <div class="profile-title" id="c-profile-title-display">Job Title</div>
+                <div id="c-profile-skills-display">
+                  <!-- Skill badges -->
+                </div>
+              </div>
+            </div>
+
+            <div class="glass" style="padding: 24px;">
+              <h3>Update Professional Profile</h3>
+              <form id="candidate-profile-form" style="margin-top: 20px;">
+                <div class="form-group">
+                  <label for="c-profile-name-input">Full Name</label>
+                  <input type="text" class="form-control" id="c-profile-name-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="c-profile-title-input">Professional Title</label>
+                  <input type="text" class="form-control" id="c-profile-title-input" placeholder="e.g. Senior Frontend Engineer">
+                </div>
+                <div class="form-group">
+                  <label for="c-profile-bio-input">Professional Bio</label>
+                  <textarea class="form-control" id="c-profile-bio-input" placeholder="Describe your experience, goals and achievements..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="c-profile-skills-input">Skills (comma-separated)</label>
+                  <input type="text" class="form-control" id="c-profile-skills-input" placeholder="JavaScript, React, Node.js, CSS">
+                </div>
+                <div class="form-group">
+                  <label for="c-profile-resume-input">Default Resume (PDF or Doc, Max 5MB)</label>
+                  <input type="file" class="form-control" id="c-profile-resume-input">
+                  <p id="c-profile-resume-status" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);"></p>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Applications Track View -->
+          <div class="dashboard-tab-content" id="c-tab-apps" style="display: none;">
+            <h2 style="margin-bottom: 20px;">Your Applications</h2>
+            <div id="candidate-applications-list" style="display: flex; flex-direction: column; gap: 16px;">
+              <!-- Dynamic candidate application items -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: EMPLOYER DASHBOARD -->
+    <section class="view-section" id="view-employer-dashboard">
+      <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar glass">
+          <ul class="sidebar-menu">
+            <li class="sidebar-link active" id="e-menu-overview">
+              <i data-lucide="bar-chart-3"></i> Reports & Stats
+            </li>
+            <li class="sidebar-link" id="e-menu-jobs">
+              <i data-lucide="clipboard-list"></i> Manage Jobs
+            </li>
+            <li class="sidebar-link" id="e-menu-post">
+              <i data-lucide="plus-circle"></i> Post New Job
+            </li>
+            <li class="sidebar-link" id="e-menu-profile">
+              <i data-lucide="building-2"></i> Company Profile
+            </li>
+          </ul>
+        </aside>
+
+        <!-- Main Panel -->
+        <div class="dashboard-main">
+          <!-- Overview & Analytics -->
+          <div class="dashboard-tab-content" id="e-tab-overview">
+            <h2 style="margin-bottom: 20px;">Performance Analytics</h2>
+            
+            <div class="stats-grid" style="margin-bottom: 30px;">
+              <div class="stat-card glass">
+                <div class="stat-number" id="stat-total-jobs">0</div>
+                <div class="stat-label">Total Jobs Posted</div>
+              </div>
+              <div class="stat-card glass">
+                <div class="stat-number" id="stat-open-jobs">0</div>
+                <div class="stat-label">Active Open Positions</div>
+              </div>
+              <div class="stat-card glass">
+                <div class="stat-number" id="stat-total-apps">0</div>
+                <div class="stat-label">Applications Received</div>
+              </div>
+            </div>
+
+            <div class="charts-grid">
+              <div class="chart-card glass">
+                <h3>Application Status breakdown</h3>
+                <div class="chart-wrapper">
+                  <canvas id="chart-status-pie"></canvas>
+                </div>
+              </div>
+              <div class="chart-card glass">
+                <h3>Application Volume Trend</h3>
+                <div class="chart-wrapper">
+                  <canvas id="chart-applications-line"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manage Jobs -->
+          <div class="dashboard-tab-content" id="e-tab-jobs" style="display: none;">
+            <div id="employer-jobs-overview">
+              <h2 style="margin-bottom: 20px;">Manage Your Job Listings</h2>
+              <div class="jobs-grid" id="employer-jobs-list">
+                <!-- List of job listings posted by the employer -->
+              </div>
+            </div>
+            
+            <!-- Applicants Review Manager Sub-View -->
+            <div id="employer-job-applicants-view" style="display: none;">
+              <button class="btn btn-secondary btn-sm" id="btn-back-to-my-jobs" style="margin-bottom: 20px;">
+                <i data-lucide="arrow-left"></i> Back to Jobs Manager
+              </button>
+              <h2 id="applicant-view-job-title" style="margin-bottom: 20px;">Applicants for Job Title</h2>
+              
+              <div style="display: flex; flex-direction: column; gap: 16px;" id="applicants-list-container">
+                <!-- List of applicants for a specific job listing -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Post New Job -->
+          <div class="dashboard-tab-content" id="e-tab-post" style="display: none;">
+            <div class="glass" style="padding: 24px;">
+              <h2>Create a New Job Listing</h2>
+              <form id="employer-post-job-form" style="margin-top: 20px;">
+                <div class="form-group">
+                  <label for="job-title-input">Job Title</label>
+                  <input type="text" class="form-control" id="job-title-input" required placeholder="e.g. Senior Full Stack Developer">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div class="form-group">
+                    <label for="job-type-input">Job Type</label>
+                    <select class="form-control" id="job-type-input" required>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Remote">Remote</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="job-location-input">Location</label>
+                    <input type="text" class="form-control" id="job-location-input" required placeholder="e.g. New York, NY or Remote">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="job-salary-input">Salary Range</label>
+                  <input type="text" class="form-control" id="job-salary-input" placeholder="e.g. $120,000 - $150,000 / year">
+                </div>
+                <div class="form-group">
+                  <label for="job-description-input">Job Description</label>
+                  <textarea class="form-control" id="job-description-input" required placeholder="Outline the main responsibilities, team overview..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="job-requirements-input">Requirements (one per line)</label>
+                  <textarea class="form-control" id="job-requirements-input" placeholder="5+ years of Javascript experience&#10;Bachelor's degree in CS&#10;Experience with AWS"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Publish Job Listing</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Employer Profile / Company Settings -->
+          <div class="dashboard-tab-content" id="e-tab-profile" style="display: none;">
+            <div class="glass" style="padding: 24px;">
+              <h2>Company Details</h2>
+              <form id="employer-profile-form" style="margin-top: 20px;">
+                <div class="form-group">
+                  <label for="e-profile-name-input">Employer Name</label>
+                  <input type="text" class="form-control" id="e-profile-name-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="e-profile-company-input">Company Name</label>
+                  <input type="text" class="form-control" id="e-profile-company-input" required>
+                </div>
+                <div class="form-group">
+                  <label for="e-profile-website-input">Company Website</label>
+                  <input type="url" class="form-control" id="e-profile-website-input" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                  <label for="e-profile-logo-input">Company Logo Initials or URL</label>
+                  <input type="text" class="form-control" id="e-profile-logo-input" placeholder="e.g. GOOG, APPL or an Image URL">
+                </div>
+                <div class="form-group">
+                  <label for="e-profile-logo-file">Or Upload Logo Image</label>
+                  <input type="file" class="form-control" id="e-profile-logo-file">
+                </div>
+                <div class="form-group">
+                  <label for="e-profile-bio-input">Company Description</label>
+                  <textarea class="form-control" id="e-profile-bio-input" placeholder="Tell candidates about your company's mission, values, work style..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Company Profile</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: SIGN IN / SIGN UP -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h2 id="auth-modal-title">Welcome to TalentWave</h2>
+        <button class="modal-close" id="btn-close-auth-modal">&times;</button>
+      </div>
+
+      <div class="modal-tabs">
+        <div class="modal-tab active" id="tab-login">Login</div>
+        <div class="modal-tab" id="tab-register">Register</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="auth-login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" class="form-control" id="login-email" required placeholder="name@company.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label for="login-password">Password</label>
+          <input type="password" class="form-control" id="login-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="auth-register-form" style="display: none;">
+        <div class="form-group">
+          <label>Join as</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;">
+            <label class="glass" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid var(--primary);">
+              <input type="radio" name="register-role" value="candidate" checked style="accent-color: var(--primary);">
+              Candidate
+            </label>
+            <label class="glass" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: var(--radius-md); cursor: pointer;">
+              <input type="radio" name="register-role" value="employer" style="accent-color: var(--primary);">
+              Employer
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="register-name">Full Name</label>
+          <input type="text" class="form-control" id="register-name" required placeholder="Alex Morgan">
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email Address</label>
+          <input type="email" class="form-control" id="register-email" required placeholder="alex@example.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label for="register-password">Password</label>
+          <input type="password" class="form-control" id="register-password" required placeholder="Minimum 6 characters">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Alert Containers -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Custom Javascript -->
+  <script src="/js/app.js"></script>
+</body>
+</html>

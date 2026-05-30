@@ -1,0 +1,4 @@
+node_modules/
+database.sqlite
+uploads/resumes/resume-candidate-*
+uploads/profiles/profile-file-*
