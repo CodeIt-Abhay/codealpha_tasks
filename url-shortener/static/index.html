@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trims | Elegant URL Shortener & Analytics</title>
+  <!-- SEO Tags -->
+  <meta name="description" content="Trims is a modern, premium URL shortener featuring detailed click analytics, custom aliases, and instant QR code generation.">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Styling -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+</head>
+<body>
+
+  <!-- Animated Background Glows -->
+  <div class="glow-bg">
+    <div class="blob blob-purple"></div>
+    <div class="blob blob-blue"></div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <i class="fa-solid fa-scissors logo-icon"></i>
+        <h1>Trims</h1>
+      </div>
+      <p class="tagline">Shorten, share, and track your links with style.</p>
+    </header>
+
+    <!-- Main Card: Shortener Form -->
+    <main class="main-content">
+      <section class="card glass shortener-card">
+        <form id="shorten-form">
+          <div class="input-group">
+            <label for="long-url" class="sr-only">Enter your long URL</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-link input-icon"></i>
+              <input 
+                type="text" 
+                id="long-url" 
+                placeholder="Paste your long link here..." 
+                required 
+                autocomplete="off"
+              >
+            </div>
+          </div>
+
+          <!-- Advanced Options Toggle -->
+          <button type="button" class="btn-toggle-options" id="toggle-options">
+            <span id="options-label">Customize short link</span>
+            <i class="fa-solid fa-chevron-down toggle-icon" id="toggle-chevron"></i>
+          </button>
+
+          <!-- Custom Alias Area (Expandable) -->
+          <div class="options-container hidden" id="options-container">
+            <div class="alias-input-wrapper">
+              <span class="domain-prefix" id="domain-prefix">trims.co/</span>
+              <input 
+                type="text" 
+                id="custom-alias" 
+                placeholder="my-custom-alias" 
+                autocomplete="off"
+                maxlength="30"
+              >
+            </div>
+            <p class="input-tip">Use letters, numbers, hyphens, and underscores.</p>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit" id="submit-btn">
+            <span class="btn-text">Shorten Link</span>
+            <i class="fa-solid fa-arrow-right btn-icon"></i>
+            <span class="spinner hidden" id="btn-spinner"></span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Success Card (Hidden by default, shown on result) -->
+      <section class="card glass success-card hidden" id="success-card">
+        <div class="success-header">
+          <div class="success-badge">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h2>Link Ready!</h2>
+        </div>
+        
+        <div class="result-box">
+          <div class="result-url-wrapper">
+            <input type="text" id="shortened-url-display" readonly>
+            <button class="btn-copy" id="btn-copy-result" title="Copy to clipboard">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="success-actions">
+          <div class="qr-section">
+            <p class="section-title">QR Code</p>
+            <div class="qr-container-wrapper">
+              <div id="qrcode" class="qrcode-canvas"></div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-download-qr">
+              <i class="fa-solid fa-download"></i> Download QR
+            </button>
+          </div>
+
+          <div class="stats-section">
+            <p class="section-title">Performance</p>
+            <div class="stats-mini-grid">
+              <div class="stat-mini-card">
+                <span class="stat-val" id="success-clicks">0</span>
+                <span class="stat-lbl">Clicks</span>
+              </div>
+              <div class="stat-mini-card">
+                <span class="stat-val" id="success-code">N/A</span>
+                <span class="stat-lbl">Short Code</span>
+              </div>
+            </div>
+            <a href="#" target="_blank" class="btn btn-secondary btn-block text-center" id="btn-visit-link">
+              <i class="fa-solid fa-external-link-alt"></i> Visit Link
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Links Dashboard -->
+      <section class="card glass dashboard-card">
+        <div class="dashboard-header">
+          <div class="dashboard-title-wrapper">
+            <i class="fa-solid fa-chart-line header-icon"></i>
+            <h2>Dashboard</h2>
+          </div>
+          
+          <div class="dashboard-actions">
+            <div class="search-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="dashboard-search" placeholder="Search links...">
+            </div>
+            <button class="btn btn-icon-only" id="btn-refresh" title="Refresh dashboard">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard Table Container -->
+        <div class="table-container">
+          <table class="dashboard-table" id="dashboard-table">
+            <thead>
+              <tr>
+                <th>Original URL</th>
+                <th>Short Link</th>
+                <th>Clicks</th>
+                <th>Created</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="links-tbody">
+              <!-- Rendered via JS -->
+              <tr class="empty-state">
+                <td colspan="5">
+                  <div class="empty-state-content">
+                    <i class="fa-solid fa-link-slash"></i>
+                    <p>No links shortened yet. Paste a link above to get started!</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 Trims. Created with precision and elegance.</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toast-container"></div>
+
+</body>
+</html>
