@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from flask import Flask, request, jsonify, redirect, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder='static', static_url_path='')
+app = Flask(__name__, static_folder='static')
 CORS(app)  # Enable Cross-Origin Resource Sharing
 
 DATABASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db')
@@ -60,7 +60,7 @@ def is_valid_url(url):
 
 @app.route('/')
 def index():
-    return app.send_static_file('index.html')
+    return send_from_directory('static', 'index.html')
 
 @app.route('/api/shorten', methods=['POST'])
 def shorten_url():
